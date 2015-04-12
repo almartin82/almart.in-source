@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 #page parameters
 AUTHOR = u'Andrew Martin'
 SITENAME = u'almart.in'
-SITEURL = ''
+SITEURL = u'http://almart.in'
 DESCRIPTION = u'r, #rstats, ggplot2, python, pandas, education, data science, maps, baseball, brooklyn'
 
 #pelican parameters
@@ -14,7 +14,8 @@ PATH = 'content'
 TIMEZONE = 'America/New_York'
 DEFAULT_LANG = u'en'
 DEFAULT_PAGINATION = False
-THEME = "safetoeat/"
+THEME = "more_wilson/"
+GOOGLE_ANALYTICS = 'UA-61809650-1'
 
 # feed generation
 FEED_ALL_ATOM = None
@@ -36,7 +37,7 @@ MEDIAITEMS = [
 
 #plugins etc
 PLUGIN_PATHS = ['pelican-plugins/']
-PLUGINS = ['post_stats']
+PLUGINS = ['post_stats', 'summary']
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True

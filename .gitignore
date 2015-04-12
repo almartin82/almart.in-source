@@ -67,3 +67,7 @@ safetoeat/
 
 #excluded because this is the output directory that lives in a separate reports
 almart.in/
+.Rproj.user
+
+#r/knitr stuff
+.Rproj
