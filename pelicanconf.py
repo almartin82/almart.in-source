@@ -25,12 +25,15 @@ MENUITEMS = [
     ('about', 'user', 'pages/about.html'),
 ]
 
+# look at base_site.html for these
 MEDIAITEMS = [
     ('https://twitter.com/moneywithwings', 'twitter', ' moneywithwings'),
     ('http://github.com/almartin82', 'github', ' almartin82'),
+    ('https://www.goodreads.com/user/show/777050-andrew-martin', 'book', 'Andrew Martin'),
     ('https://keybase.io/almartin', 'key', ' almartin'),
     ('www.linkedin.com/in/martinandrewl', 'linkedin', ' Andrew Martin'),
 ]
+
 #plugins etc
 PLUGIN_PATHS = ['pelican-plugins/']
 PLUGINS = ['post_stats']
