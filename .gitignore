@@ -55,3 +55,15 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#pycharm
+.idea/
+
+# pelican stuff
+pelican-plugins/
+
+#excluded because is already in version control in separate reports
+safetoeat/
+
+#excluded because this is the output directory that lives in a separate reports
+almart.in/
