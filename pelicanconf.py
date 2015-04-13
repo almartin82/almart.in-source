@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
-
 #page parameters
 AUTHOR = u'Andrew Martin'
 SITENAME = u'almart.in'
@@ -22,6 +21,9 @@ GOOGLE_ANALYTICS = 'UA-61809650-1'
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
+
+#more_wilson settings
+USE_COMMENTS = False
 
 MENUITEMS = [
     ('about', 'user', 'pages/about.html'),
@@ -44,4 +46,4 @@ PLUGINS = ['post_stats', 'summary', 'rmd_reader']
 STATIC_PATHS = ['figure', 'datasets']
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = True
+#RELATIVE_URLS = True
