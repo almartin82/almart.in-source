@@ -15,12 +15,13 @@ TIMEZONE = 'America/New_York'
 DEFAULT_LANG = u'en'
 DEFAULT_PAGINATION = False
 THEME = "more_wilson/"
-GOOGLE_ANALYTICS = 'UA-61809650-1'
+GOOGLE_ANALYTICS = True
+GOOGLE_ANALYTICS_ID = u'UA-61809650-1'
 
 # feed generation
-FEED_ALL_ATOM = None
+FEED_ALL_RSS = 'feeds/all_rss.xml'
+FEED_ALL_ATOM = 'feeds/all_atom.xml'
 CATEGORY_FEED_ATOM = None
-TRANSLATION_FEED_ATOM = None
 
 #more_wilson settings
 USE_COMMENTS = False
@@ -43,7 +44,7 @@ PLUGIN_PATHS = ['pelican-plugins/']
 PLUGINS = ['post_stats', 'summary', 'rmd_reader']
 
 #knitr/rmd integration
-STATIC_PATHS = ['figure', 'datasets']
+STATIC_PATHS = ['figure']
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True

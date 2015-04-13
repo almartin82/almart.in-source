@@ -4,17 +4,18 @@ Category: meta
 Slug: pelican-with-rmd
 Author: Andrew Martin
 
-[Rebecca Weiss](https://rjweiss.github.io/) asked the great question [*"How easy is it to use R markdown and knitr with pelican?"*](https://rjweiss.github.io/articles/2014_08_25/testing-rmarkdown-integration/) in summer of 2014.  Having (successfully!) gotten up and running with the same stack, I thought I would offer some additional thoughts.
+I leaned heavily on a great post from [Rebecca Weiss](https://rjweiss.github.io/) titled [*"How easy is it to use R markdown and knitr with pelican?"*](https://rjweiss.github.io/articles/2014_08_25/testing-rmarkdown-integration/) to get Pelican/knitr integration up and running.  Rebecca wrote her post in 2014 in a Mac/Unix environment, so I thought that I would contribute an update, and some errata for Windows users.
 
-If you're landing here from google, a quick overview & definition of some terms:
+If you're landing here from Google, a quick overview & definition of some terms:
 
-* [Pelican](http://docs.getpelican.com/en/3.5.0/) is a static site generator written in Python.  If you've ever seen the [github pages](http://jekyllrb.com/docs/github-pages/) tutorials that use Jekyll, Pelican is a great alternative if you want to stay in the Python universe.
+* [Pelican](http://docs.getpelican.com/en/3.5.0/) is a static site generator written in Python.  If you've ever seen the [Github pages](http://jekyllrb.com/docs/github-pages/) tutorials that use Jekyll, Pelican is a great alternative if you want to stay in the Python universe.
 
 * [knitr](http://yihui.name/knitr/demo/minimal/) is a report generation package for R (especially [R Studio](http://www.rstudio.com/)) that makes it easy to mix words, simple formatting and R code.
 
 It would be great to be able to write up an .Rmd, run `pelican content`, and have everything just show up on the web, with syntax highlighting, inline images, etc.  That's what Pelican + knitr lets us do!
 
 # behind the scenes
+
 A few quick words about what is happening - the `rmd_reader` plugin depends on the python [`rpy2`](http://rpy.sourceforge.net/rpy2/doc-2.1/html/) package, which exposes an interface from Python into R.  `rpy2` turns the .Rmd into an [.aux file](http://tex.stackexchange.com/questions/47943/how-to-use-the-aux-file) _(things get a little hand-wavy for me here - I am team html/markdown/mathjax)_ and then calls `knit()` in R to generate a markdown file.
 
 # general thoughts
@@ -23,9 +24,12 @@ A few quick words about what is happening - the `rmd_reader` plugin depends on t
 
 2) It took me a second to figure out [`pelican.publish=TRUE`](https://github.com/getpelican/pelican-plugins/tree/master/rmd_reader#plotting).  If you're writing in RStudio and want to see local output, set that to FALSE.  But if you are ready to run pelican content and publish to the web, that should be TRUE.
 
-3) Rebecca has some great discussion about figure paths, and how to cajole knitr into putting image assets into the right place.  I may go down that road eventually - folder separation between categories might be nice.  For now, though, I am going with the [One Big Folder](https://github.com/almartin82/almart.in-source/tree/master/content) strategy, and am throwing a numeric prefix onto the text files so that posts will sort sequentially.  That didn't require any tinkering with `fig.path` -- so if you are trying to get up and running, my advice would be to start by writing an .Rmd in `content/`, get the publishing workflow nailed down, and then start to re-organize your content - otherwise it could be tricky to distinguish between a problem with rpy2 and a problem with your `fig.path`.
+3) Rebecca has some great discussion about figure paths, and how to cajole knitr into putting image assets into the right place.  I may go down that road eventually - folder separation between categories might be nice.  For now, though, I am going with the [One Big Folder](https://github.com/almartin82/almart.in-source/tree/master/content) strategy, and am throwing a numeric prefix onto the text files so that posts will sort sequentially.  That didn't require any tinkering with `fig.path` -- so if you are trying to get up and running, my advice would be to start by writing an .Rmd in `content/` with no special `ARTICLE_URL` or `ARTICLE_SAVE_AS` paths, get your publishing workflow nailed down, and then start to re-organize your content - otherwise it could be tricky to identify what's a problem with rpy2/knitr dispatch, and what's simple an issue with filenames/`fig.path`.
+
+4) Not strictly .Rmd related, but a note on feed generation.  It's not always immediately clear which `pelicanconf.py` parameters are True/False, and which ones need a text value.  If you set `FEED_ALL_ATOM=True`, Pelican will throw a `CRITICAL: 'bool' object has no attribute 'lstrip'` error.
 
 # this was kind of a pain on Windows
+
 Yeah.  You'll never believe it.  Some things that came up:
 
 1) Make sure you have a [`R_HOME`](http://stackoverflow.com/questions/17573988/r-home-error-with-rpy2) environment variable set up, or else your `rpy2` install might be pointing at the oldest version of R on your system.  Symptoms that this is happening: you'll get knitr errors when you try to process the .Rmd, because knitr might not be installed.
