@@ -16,11 +16,13 @@ DEFAULT_LANG = u'en'
 DEFAULT_PAGINATION = False
 THEME = "more_wilson/"
 GOOGLE_ANALYTICS = True
-GOOGLE_ANALYTICS_ID = u'UA-61809650-1'
+GOOGLE_ANALYTICS_ID = 'UA-61809650-1'
+OUTPUT_SOURCES = 'True'
+OUTPUT_SOURCES_EXTENSION = '.txt'
 
 # feed generation
-FEED_ALL_RSS = 'feeds/all_rss.xml'
-FEED_ALL_ATOM = 'feeds/all_atom.xml'
+FEED_ALL_RSS = '/feeds/all_rss.xml'
+FEED_ALL_ATOM = '/feeds/all_atom.xml'
 CATEGORY_FEED_ATOM = None
 
 #more_wilson settings

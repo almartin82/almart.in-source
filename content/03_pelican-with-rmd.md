@@ -34,7 +34,7 @@ Yeah.  You'll never believe it.  Some things that came up:
 
 1) Make sure you have a [`R_HOME`](http://stackoverflow.com/questions/17573988/r-home-error-with-rpy2) environment variable set up, or else your `rpy2` install might be pointing at the oldest version of R on your system.  Symptoms that this is happening: you'll get knitr errors when you try to process the .Rmd, because knitr might not be installed.
 
-2) There was a slight problem with the way `rmd_reader` was reading pathnames - \\Users was getting interpreted as a Unicode character.  I pushed a [patch](https://github.com/getpelican/pelican-plugins/pull/464) the plugin library that should address this, if the pull request is accepted.
+2) There was a slight problem with the way `rmd_reader` was reading pathnames - `c:\\Users...` was getting interpreted as a Unicode character.  I pushed a [patch](https://github.com/getpelican/pelican-plugins/pull/464) the plugin library that should address this, if the pull request is accepted.
 
 3) Graphics drivers were a pain point.  Drivers that were working in RStudio (png, svg) were not working when called via the rpy2 interface.  Not totally sure what the story is here, but I ended up throwing `opts_chunk$set(dev='Cairo_svg')` into my rmd_reader block -- take a look at the [example](https://raw.githubusercontent.com/almartin82/almart.in-source/849d26d53631523b10c18bb77c08135ed0d7d6b1/content/sample-rmd.Rmd) if you want to see it in action.
 
