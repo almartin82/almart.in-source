@@ -31,14 +31,15 @@ Yeah.  Some things that came up:
 
 2) It took me a second to figure out [`pelican.publish=TRUE`](https://github.com/getpelican/pelican-plugins/tree/master/rmd_reader#plotting).  If you're writing in RStudio and want to see local output, set that to FALSE.  But if you are ready to run pelican content and publish to the web, that should be TRUE.
 
-3) Rebecca has some great discussion about figure paths, and how to cajole knitr into putting image assets into the right place.  
-figure paths
+3) Rebecca has some great discussion about figure paths, and how to cajole knitr into putting image assets into the right place.  I may go down that road eventually - folder separation between categories might be nice.  For now, though, I am going with the [One Big Folder](https://github.com/almartin82/almart.in-source/tree/master/content) strategy, and am throwing a numeric prefix onto the text files so that posts will sort sequentially.  That didn't require any tinkering with `fig.path` -- so if you are trying to get up and running, my advice would be to start by writing an .Rmd in `content/`, get the publishing workflow nailed down, and then start to re-organize your content - otherwise it could be tricky to distinguish between a problem with rpy2 and a problem with your `fig.path`.
+
+Overall, though, I have to say that I'm thrilled about having a straightforward .Rmd publishing tool.  [rpubs](https://rpubs.com/) is great, but having the ability to publish rmds to my own site is exciting.
 
 # enhancement ideas
 
 One thing that would be helpful would be a pelican_rmd template, following the [tutorials]((http://rmarkdown.rstudio.com/developer_document_templates.html)) for creating custom knitr templates on RStudio.  That would fix the metadata problem, and it could have a nice block with all the `hook_content` stuff all ready to go.  If I find some time while this is still fresh, I'd like to add some of this back to Wilson's readme for rmd_reader.  *Shiny* support is also something to look into.
 
-Overall, though, I have to say that I'm thrilled about having a straightforward .Rmd publishing tool.  [rpubs](https://rpubs.com/) is great, but having the ability to publish rmds to my own site is exciting.
+
 
 
 
