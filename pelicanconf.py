@@ -44,4 +44,4 @@ PLUGINS = ['post_stats', 'summary', 'rmd_reader']
 STATIC_PATHS = ['figure', 'datasets']
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True

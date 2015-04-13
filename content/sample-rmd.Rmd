@@ -1,11 +1,12 @@
----
-title: "sample_rmd"
-author: "Andrew Martin"
-date: "Sunday, April 12, 2015"
-output: html_document
----
+Title: sample rmd
+Date: 2015-04-10
+Tags: data, maps
+Category: maps
+Slug: sample-rmd
+Author: Andrew Martin
 
 ```{r, echo=FALSE}
+library(knitr)
 hook_plot <- knit_hooks$get('plot')
 
 knit_hooks$set(plot=function(x, options) {
@@ -14,8 +15,8 @@ knit_hooks$set(plot=function(x, options) {
     }
     hook_plot(x, options)
 })
+opts_chunk$set(dev='Cairo_svg')
 opts_chunk$set(pelican.publish=TRUE)
-
 ```
 
 
@@ -32,5 +33,3 @@ You can also embed plots, for example:
 ```{r, echo=FALSE}
 plot(cars)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
