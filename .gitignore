@@ -63,7 +63,7 @@ target/
 pelican-plugins/
 
 #excluded because is already in version control in separate reports
-safetoeat/
+more_wilson/
 
 #excluded because this is the output directory that lives in a separate reports
 almart.in/
@@ -71,3 +71,4 @@ almart.in/
 
 #r/knitr stuff
 .Rproj
+foo.py

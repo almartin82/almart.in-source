@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
+
 #page parameters
 AUTHOR = u'Andrew Martin'
 SITENAME = u'almart.in'
@@ -37,7 +38,10 @@ MEDIAITEMS = [
 
 #plugins etc
 PLUGIN_PATHS = ['pelican-plugins/']
-PLUGINS = ['post_stats', 'summary']
+PLUGINS = ['post_stats', 'summary', 'rmd_reader']
+
+#knitr/rmd integration
+STATIC_PATHS = ['figure', 'datasets']
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
