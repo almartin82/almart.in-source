@@ -12,6 +12,7 @@ DESCRIPTION = u'r, #rstats, ggplot2, python, pandas, education, data science, ma
 OUTPUT_PATH = 'almart.in/'
 PATH = 'content'
 TIMEZONE = 'America/New_York'
+DEFAULT_DATE_FORMAT = '%B %d %Y'
 DEFAULT_LANG = u'en'
 DEFAULT_PAGINATION = False
 THEME = "more_wilson/"
@@ -19,6 +20,7 @@ GOOGLE_ANALYTICS = True
 GOOGLE_ANALYTICS_ID = 'UA-61809650-1'
 OUTPUT_SOURCES = 'True'
 OUTPUT_SOURCES_EXTENSION = '.txt'
+SUMMARY_MAX_LENGTH = 250
 
 # feed generation
 FEED_ALL_RSS = '/feeds/all_rss.xml'
@@ -38,7 +40,7 @@ MEDIAITEMS = [
     ('http://github.com/almartin82', 'github', ' almartin82'),
     ('https://www.goodreads.com/user/show/777050-andrew-martin', 'book', 'Andrew Martin'),
     ('https://keybase.io/almartin', 'key', ' almartin'),
-    ('www.linkedin.com/in/martinandrewl', 'linkedin', ' Andrew Martin'),
+    ('http://www.linkedin.com/in/martinandrewl', 'linkedin', ' Andrew Martin'),
 ]
 
 #plugins etc
@@ -46,7 +48,7 @@ PLUGIN_PATHS = ['pelican-plugins/']
 PLUGINS = ['post_stats', 'summary', 'rmd_reader']
 
 #knitr/rmd integration
-STATIC_PATHS = ['figure']
+STATIC_PATHS = ['static_images', 'datasets', 'figure']
 
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
