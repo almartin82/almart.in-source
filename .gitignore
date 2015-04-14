@@ -70,4 +70,7 @@ almart.in/
 .Rproj.user
 
 #r/knitr stuff
-.Rproj
+*.Rproj
+content/*.Rproj
+.Rhistory
+content/*.Rhistory
