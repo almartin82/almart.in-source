@@ -1,5 +1,5 @@
-Title: Working with NJASK data in R: part 2 in a series.
-Date: 2015-04-14
+Title: Getting NJASK data into R: part 2 of 2.
+Date: 2015-04-15
 Status: draft
 Category: education
 Tags: NJ, NJASK, data_management, tutorial
@@ -37,7 +37,7 @@ head(layout_wide)
 ```
 
 Our final call to `read_fwf` in the last post looked like this:
-
+  
 ```{r final_fwf}
 
 sample_file = "http://www.state.nj.us/education/schools/achievement/14/njask8/state_summary.txt"
@@ -62,12 +62,19 @@ A script that has a bunch of copy/paste versions of that call would probably get
 
 ```{r as_function}
 
-read_njask <- function(year, grade, layout=layout_wide) {
+get_raw_njask <- function(year, grade, layout=layout_wide) {
   require(readr)
+    
+  #url paths changed in 2012
+  years <- list(
+    "2014"="14", "2013"="13", "2012"="2013", "2011"="2012", "2010"="2011", "2009"="2010", 
+    "2008"="2009", "2007"="2008", "2006"="2007", "2005"="2006", "2004"="2005"
+  )
+  parsed_year <- years[[as.character(year)]]
   
   #build url
   target_url <- paste0(
-    "http://www.state.nj.us/education/schools/achievement/", year-2000, 
+    "http://www.state.nj.us/education/schools/achievement/", parsed_year, 
     "/njask", grade, "/state_summary.txt"
   )
   
@@ -91,10 +98,138 @@ read_njask <- function(year, grade, layout=layout_wide) {
 
 Let's give it a try!
 
-```{r test_read_njask} 
+```{r test_get_raw_njask} 
+library(magrittr)
 
-ex <- read_njask(2014, 6)
+ex <- get_raw_njask(2014, 6)
 
 dplyr::sample_n(ex[, sample(c(1:551), 10)], 10) %>% as.data.frame()
 
 ```
+
+Great - we can definitely pull down all the data files we need.  Now let's make sure that we are doing the necessary cleanup.  In particular, there are 228 columns in our layout file that have the comment 'One implied decimal.'  That really matters - it means that `255` _actually_ means 25.5.  
+
+For each of those columns, we want to apply a function to each column.  Hadley's `dplyr` has a nice utility for doing this - `mutate_each`.
+
+We'll also need to make sure that we only mutate the columns that are tagged with 'One implied decimal.'
+
+```{r limit_df}
+library(dplyr)
+
+
+
+process_njask <- function(df, mask=layout_wide$comments == 'One implied decimal') {
+  #keep the names to put back in the same order
+  all_names <- names(df)
+  
+  #put some columns aside
+  ignore <- df[, !mask]
+  
+  #process the columns that have an implied decimal
+  processed <- df[, mask] %>%
+    dplyr::mutate_each(
+      dplyr::funs(implied_decimal = . / 10)  
+    )
+  
+  #put back together 
+  final <- cbind(ignore, processed)
+  
+  #reorder and return
+  final %>%
+    select(
+      one_of(names(df))
+    )
+}
+
+ex_process <- process_njask(ex)
+
+head(ex_process[, 1:15])
+
+```
+
+Now we put it all together, with a wrapper function around the `get_raw_njask` and `process_njask` functions:
+
+```{r combined}
+
+valid_call <- function(year, grade) {
+  #common core transition started in 2015
+  if(year > 2014) {
+    valid_call <- FALSE
+  #NJASK fully implemented in 2008
+  } else if(year >= 2006) {
+    valid_call <- grade %in% c(3:8, 11)
+  } else if (year >= 2004) {
+    valid_call <- grade %in% c(3, 4, 8, 11)
+  } else if (year < 2004) {
+    valid_call <- FALSE
+  }
+  
+  return(valid_call)
+
+}
+
+
+standard_assess <- function(year, grade) {
+  if(grade %in% c(3:8)) {
+    assess_data <- get_raw_njask(year, grade) %>%
+      process_njask()
+  } else if (grade == 11) {
+    #not yet implemented
+    assess_data <- get_raw_hspa(year) %>%
+      process_hspa
+  }
+  
+  return(assess_data)
+} 
+
+
+fetch_nj_assess <- function(year, grade) {
+
+  is_valid <- valid_call(year, grade)
+  
+  if (year >= 2008) {
+    assess_data <- standard_assess(year, grade)
+  #2006 and 2007: GEPA in 8th grade
+  } else if (year %in% c(2006, 2007)) {
+    if (grade %in% c(3:7)) {
+      assess_data <- standard_assess(year, grade)  
+    } else if (grade == 8) {
+      #not yet implemented
+      assess_data <- get_raw_gepa(year) %>%
+        process_gepa()
+    } else if (grade == 11) {
+      #not yet implemented
+      assess_data <- get_raw_hspa(year) %>%
+        process_hspa
+    }
+  } else if (year %in% c(2004, 2005)) {
+    if (grade %in% c(3:4)) {
+      assess_data <- standard_assess(year, grade)  
+    } else if (grade == 8) {
+      #not yet implemented
+      assess_data <- get_raw_gepa(year) %>%
+        process_gepa()
+    } else if (grade == 11) {
+      #not yet implemented
+      assess_data <- get_raw_hspa(year) %>%
+        process_hspa 
+    }
+  }
+ 
+  return(assess_data)
+}
+
+fetch_nj_assess(2014, 6) %>% head()
+
+```
+
+
+Finally, as a convenience, let's write a function that brings down all of the NJASK data for all years and grades.
+
+```{r all_njask}
+
+
+
+```
+
+And that's it!  Now we can explore the data to see what we can learn about school performance in NJ.
