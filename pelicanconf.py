@@ -23,9 +23,8 @@ OUTPUT_SOURCES_EXTENSION = '.txt'
 SUMMARY_MAX_LENGTH = 250
 
 # feed generation
-FEED_ALL_RSS = '/feeds/all_rss.xml'
 FEED_ALL_ATOM = '/feeds/all_atom.xml'
-CATEGORY_FEED_ATOM = None
+CATEGORY_FEED_ATOM = 'feeds/%s.atom.xml'
 
 #more_wilson settings
 USE_COMMENTS = False
@@ -37,6 +36,7 @@ MENUITEMS = [
 # look at base_site.html for these
 MEDIAITEMS = [
     ('https://twitter.com/moneywithwings', 'twitter', ' moneywithwings'),
+    ('mailto:almartin at gmail dot com', 'envelope', 'almartin at gmail dot com'),
     ('http://github.com/almartin82', 'github', ' almartin82'),
     ('https://www.goodreads.com/user/show/777050-andrew-martin', 'book', 'Andrew Martin'),
     ('https://keybase.io/almartin', 'key', ' almartin'),

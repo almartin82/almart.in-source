@@ -1,8 +1,8 @@
-Title: Getting NJASK data into R: part 1 of 2.
+Title: Getting NJ assessment data into R: part 1 in a series.
 Date: 2015-04-13
 Category: education
-Tags: NJ, NJASK, data_management, tutorial
-Slug: reading-njask-data-1
+Tags: NJ, assessment, NJASK, HSPA, data_management, tutorial
+Slug: reading-nj-assess-data-1
 Author: Andrew Martin
 
 ```{r, echo=FALSE}
@@ -80,9 +80,8 @@ I think we can do some dplyr tricks and recover the nested aspects of this data.
 ```{r read_layout}
 
 layout <- readr::read_csv("datasets/njask_layout.csv")
-
-head(layout)
 names(layout) <- tolower(gsub(' ', '_', names(layout)))
+head(layout)
 
 ```
 
@@ -149,7 +148,7 @@ We'll pass the row number we just generated as an identifier to one of the many 
 
 ```{r reshape2}
 
-layout_wide <- dcast(
+layout_njask <- dcast(
   data = with_rn,
   formula = field_start_position + field_end_position + field_length +
     data_type + description + comments + valid_values ~ rn,
@@ -157,9 +156,9 @@ layout_wide <- dcast(
 )
 
 #this appears to be a bug in dcast?  should not be needed.
-layout_wide$spanner2 <- ifelse(is.na(layout_wide$spanner2),'', layout_wide$spanner2)
+layout_njask$spanner2 <- ifelse(is.na(layout_njask$spanner2),'', layout_njask$spanner2)
 
-layout_wide[1:20, ]
+layout_njask[1:20, ]
 
 ```
 
@@ -168,27 +167,27 @@ Success!  Now we just concatenate `description`, `spanner1`, and `spanner2` into
 ```{r combine}
 
 #no plus or () symbols
-layout_wide$spanner1 <- gsub('+', 'and', layout_wide$spanner1, fixed = TRUE)
-layout_wide$spanner1 <- gsub('(', '', layout_wide$spanner1, fixed = TRUE)
-layout_wide$spanner1 <- gsub(')', '', layout_wide$spanner1, fixed = TRUE)
+layout_njask$spanner1 <- gsub('+', 'and', layout_njask$spanner1, fixed = TRUE)
+layout_njask$spanner1 <- gsub('(', '', layout_njask$spanner1, fixed = TRUE)
+layout_njask$spanner1 <- gsub(')', '', layout_njask$spanner1, fixed = TRUE)
 
-layout_wide$final_name <- layout_wide %$% paste(spanner1, spanner2, description, sep='_')
+layout_njask$final_name <- layout_njask %$% paste(spanner1, spanner2, description, sep='_')
 #kill double underscores
-layout_wide$final_name <- gsub('__', '_', layout_wide$final_name)
+layout_njask$final_name <- gsub('__', '_', layout_njask$final_name)
 #kill leading or trailer underscores
-layout_wide$final_name <- gsub("(^_+|_+$)", "", layout_wide$final_name)
+layout_njask$final_name <- gsub("(^_+|_+$)", "", layout_njask$final_name)
 #trim any remaining whitespace
-layout_wide$final_name <- gsub("^\\s+|\\s+$", "", layout_wide$final_name)
+layout_njask$final_name <- gsub("^\\s+|\\s+$", "", layout_njask$final_name)
 #all whitespace becomes underscore
-layout_wide$final_name <- gsub(' ', '_', layout_wide$final_name)
+layout_njask$final_name <- gsub(' ', '_', layout_njask$final_name)
 
 #more whitespace cleanup
-layout_wide$comments <- gsub("^\\s+|\\s+$", "", layout_wide$comments)
-layout_wide$description <- gsub("^\\s+|\\s+$", "", layout_wide$description)
-layout_wide$valid_values <- gsub("^\\s+|\\s+$", "", layout_wide$valid_values)
+layout_njask$comments <- gsub("^\\s+|\\s+$", "", layout_njask$comments)
+layout_njask$description <- gsub("^\\s+|\\s+$", "", layout_njask$description)
+layout_njask$valid_values <- gsub("^\\s+|\\s+$", "", layout_njask$valid_values)
 
 
-head(layout_wide)
+head(layout_njask)
 
 ```
 
@@ -202,9 +201,9 @@ sample_file = "http://www.state.nj.us/education/schools/achievement/14/njask8/st
 njask14_gr8 <- readr::read_fwf(
   file = sample_file,
   col_positions = readr::fwf_positions(
-    start = layout_wide$field_start_position,
-    end = layout_wide$field_end_position,
-    col_names = layout_wide$final_name
+    start = layout_njask$field_start_position,
+    end = layout_njask$field_end_position,
+    col_names = layout_njask$final_name
   ),
   na = "*"
 )
@@ -220,11 +219,11 @@ dplyr::sample_n(njask14_gr8[, sample(c(1:551), 10)], 10) %>% as.data.frame()
 
 ```
 
-In the next post, we'll talk about how to turn this linear script into a function that can process all of the state data.  In preparation, let's dump the layout data frame that we cleaned up here to an `.rda` object so that we can easily use it later.
+In the [next post]('/reading-nj-assess-data-2.html'), I'll talk about how to turn this linear script into a function that can process all of the state data.  In preparation, let's dump the layout data frame that we cleaned up here to an `.rda` object so that we can easily use it later.
 
 ```{r export}
 
-save(layout_wide, file = 'datasets/njask_layout.rda')
+save(layout_njask, file = 'datasets/njask_layout.rda')
 
 ```
 
@@ -232,6 +231,6 @@ save(layout_wide, file = 'datasets/njask_layout.rda')
 
 ```{r all_the_headers}
 
-layout_wide$final_name
+layout_njask$final_name
 
 ```

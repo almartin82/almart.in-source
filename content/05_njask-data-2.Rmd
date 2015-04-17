@@ -1,9 +1,8 @@
-Title: Getting NJASK data into R: part 2 of 2.
+Title: Getting NJ assessment data into R: part 2 in a series
 Date: 2015-04-15
-Status: draft
 Category: education
-Tags: NJ, NJASK, data_management, tutorial
-Slug: reading-njask-data-2
+Tags: NJ, assessment, NJASK, HSPA, data_management, tutorial
+Slug: reading-nj-assess-data-2
 Author: Andrew Martin
 
 ```{r, echo=FALSE}
@@ -24,15 +23,15 @@ opts_chunk$set(pelican.publish=ready_to_ship)
 
 ```
 
-In my [last post]('/reading-njask-data-1.html'), I showed how to read a fixed width file into R.  In this post, I'll refactor that code into a function that takes year/grade as a parameter.
+In my [last post]('/reading-nj-assess-1.html'), I showed how to read a fixed width file into R.  In this post, I'll refactor that code into a function that takes year/grade as a parameter.
 
-First, read in the layout data frame.  This contains the column headers for NJASK fixed with files.
+First, read in the layout data frame.  This contains the column headers for NJASK fixed with files.<!-- PELICAN_END_SUMMARY -->
 
 ```{r load_layout}
 
 load(file = 'datasets/njask_layout.rda')
 
-head(layout_wide)
+head(layout_njask)
 
 ```
 
@@ -45,9 +44,9 @@ sample_file = "http://www.state.nj.us/education/schools/achievement/14/njask8/st
 njask14_gr8 <- readr::read_fwf(
   file = sample_file,
   col_positions = readr::fwf_positions(
-    start = layout_wide$field_start_position,
-    end = layout_wide$field_end_position,
-    col_names = layout_wide$final_name
+    start = layout_njask$field_start_position,
+    end = layout_njask$field_end_position,
+    col_names = layout_njask$final_name
   ),
   na = "*"
 )
@@ -62,7 +61,7 @@ A script that has a bunch of copy/paste versions of that call would probably get
 
 ```{r as_function}
 
-get_raw_njask <- function(year, grade, layout=layout_wide) {
+get_raw_njask <- function(year, grade, layout=layout_njask) {
   require(readr)
     
   #url paths changed in 2012
@@ -82,9 +81,9 @@ get_raw_njask <- function(year, grade, layout=layout_wide) {
   df <- readr::read_fwf(
     file = target_url,
     col_positions = readr::fwf_positions(
-      start = layout_wide$field_start_position,
-      end = layout_wide$field_end_position,
-      col_names = layout_wide$final_name
+      start = layout$field_start_position,
+      end = layout$field_end_position,
+      col_names = layout$final_name
     ),
     na = "*"
   )
@@ -116,11 +115,12 @@ We'll also need to make sure that we only mutate the columns that are tagged wit
 ```{r limit_df}
 library(dplyr)
 
-
-
-process_njask <- function(df, mask=layout_wide$comments == 'One implied decimal') {
+process_njask <- function(df, mask=layout_njask$comments == 'One implied decimal') {
   #keep the names to put back in the same order
   all_names <- names(df)
+  
+  #replace any line breaks in last column
+  df$Grade <- gsub('\n', '', df$Grade, fixed = TRUE)
   
   #put some columns aside
   ignore <- df[, !mask]
@@ -147,89 +147,16 @@ head(ex_process[, 1:15])
 
 ```
 
-Now we put it all together, with a wrapper function around the `get_raw_njask` and `process_njask` functions:
+Now we put it all together, with a little wrapper function around the `get_raw_njask` and `process_njask` functions:
 
-```{r combined}
+```{r wrapper}
 
-valid_call <- function(year, grade) {
-  #common core transition started in 2015
-  if(year > 2014) {
-    valid_call <- FALSE
-  #NJASK fully implemented in 2008
-  } else if(year >= 2006) {
-    valid_call <- grade %in% c(3:8, 11)
-  } else if (year >= 2004) {
-    valid_call <- grade %in% c(3, 4, 8, 11)
-  } else if (year < 2004) {
-    valid_call <- FALSE
-  }
-  
-  return(valid_call)
-
+fetch_njask <- function(year, grade) {
+  get_raw_njask(year, grade) %>% process_njask()
 }
 
-
-standard_assess <- function(year, grade) {
-  if(grade %in% c(3:8)) {
-    assess_data <- get_raw_njask(year, grade) %>%
-      process_njask()
-  } else if (grade == 11) {
-    #not yet implemented
-    assess_data <- get_raw_hspa(year) %>%
-      process_hspa
-  }
-  
-  return(assess_data)
-} 
-
-
-fetch_nj_assess <- function(year, grade) {
-
-  is_valid <- valid_call(year, grade)
-  
-  if (year >= 2008) {
-    assess_data <- standard_assess(year, grade)
-  #2006 and 2007: GEPA in 8th grade
-  } else if (year %in% c(2006, 2007)) {
-    if (grade %in% c(3:7)) {
-      assess_data <- standard_assess(year, grade)  
-    } else if (grade == 8) {
-      #not yet implemented
-      assess_data <- get_raw_gepa(year) %>%
-        process_gepa()
-    } else if (grade == 11) {
-      #not yet implemented
-      assess_data <- get_raw_hspa(year) %>%
-        process_hspa
-    }
-  } else if (year %in% c(2004, 2005)) {
-    if (grade %in% c(3:4)) {
-      assess_data <- standard_assess(year, grade)  
-    } else if (grade == 8) {
-      #not yet implemented
-      assess_data <- get_raw_gepa(year) %>%
-        process_gepa()
-    } else if (grade == 11) {
-      #not yet implemented
-      assess_data <- get_raw_hspa(year) %>%
-        process_hspa 
-    }
-  }
- 
-  return(assess_data)
-}
-
-fetch_nj_assess(2014, 6) %>% head()
+fetch_njask(2014, 6) %>% head() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean)
 
 ```
 
-
-Finally, as a convenience, let's write a function that brings down all of the NJASK data for all years and grades.
-
-```{r all_njask}
-
-
-
-```
-
-And that's it!  Now we can explore the data to see what we can learn about school performance in NJ.
+There's a more data out there than just the grade 3 NJASK, though.  In my next post, we'll tackle the HSPA, and dive into some older data - the 'Grade Eight Proficiency Assessment' (GEPA) that used to be offered to students at the end of middle school.  We'll also look at some ways to stitch all those functions together to provide a simplified interface for bringing NJ assessment data into R.
