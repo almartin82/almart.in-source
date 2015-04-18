@@ -1,0 +1,22 @@
+Title: "The pool of publications just keeps getting wider..."
+Date: 2015-04-18
+Status: draft
+Category: projects
+Tags: webscraper, podcast
+Slug: longform-sources
+Author: Andrew Martin
+
+In this week's [Longform](https://longform.org/) [podcast](https://longform.org/podcast) there was an interesting aside about the different outlets for journalism in 2015.  [Aaron Lammer](https://twitter.com/aaronlammer) was interviewing Rachel Syme, and they were talking about career paths - about how journalists in their late 20s/30s are the last cohort who started as interns at traditional publications.
+
+Rachel:
+> my same generation of journalists [who] were last ones to arrive during  these weird cusp years, where there was no buzzfeed, no vice, really, no awl, no - none of these places that young people could just enter into and get a job or write or have exposure - you had to pay your dues.  It was still this last generation [where] getting an editiorial assistant as a conde naste magizine was _the thing_ that everyone wanted to do when you arrived on campus.
+
+Aaron:
+> Longform has only existed five years, and actually when you just look at the annual statistics of it you can see this happening - you can see that the first year it's new yorker, new york times, new republic, and the pool of publications that have over, say, five articles recommended during the year just keeps getting wider and wider every year...
+
+```{r raw_data}
+
+lf <- read.csv('datasets/longform_sources.csv')
+head(lf)
+
+```
