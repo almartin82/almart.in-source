@@ -1,4 +1,5 @@
 Title: data cleanup for longform post
+Date: 2015-04-19
 Category: data_prep
 Status: draft
 Slug: longform-data-cleanup
