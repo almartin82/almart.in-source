@@ -1,0 +1,134 @@
+Title: "The pool of publications just keeps getting wider..."
+Date: 2015-04-18
+Status: draft
+Category: projects
+Tags: webscraper, podcast
+Slug: longform-sources
+Author: Andrew Martin
+
+# the idea
+
+In this week's [Longform](https://longform.org/) [podcast](https://longform.org/podcast) there was an interesting aside about the different outlets for journalism in 2015.  [Aaron Lammer](https://twitter.com/aaronlammer) was interviewing Rachel Syme, and they were talking about career paths - about how journalists in their late 20s/30s are the last cohort who started as interns at traditional publications.
+
+Rachel:
+> my same generation of journalists [who] were last ones to arrive during  these weird cusp years, where there was no buzzfeed, no vice, really, no awl, no - none of these places that young people could just enter into and get a job or write or have exposure - you had to pay your dues.  It was still this last generation [where] getting an editiorial assistant as a conde naste magizine was _the thing_ that everyone wanted to do when you arrived on campus.
+
+Aaron:
+> Longform has only existed five years, and actually when you just look at the annual statistics of it you can see this happening - you can see that the first year it's new yorker, new york times, new republic, and the pool of publications that have over, say, five articles recommended during the year just keeps getting wider and wider every year...
+
+That's interesting!  How _has_ the universe of longform journalism changed in the past 5 years?
+
+I wrote a python script to read over the articles on longform and record their author, publication, and date.  You can look at the code [here](https://github.com/almartin82/longform-scrape) if that's your thing.  There's also some detail about the post-processing that I did [here]('/longform-data-cleanup.html').
+
+```{r load_in}
+library(dplyr)
+
+knitr::knit('08a_longform-data-prep.rmd', tangle=TRUE)
+source('08a_longform-data-prep.R')
+
+```
+
+# about the data
+
+The first longform.org stories were published in April of 2010; there have been about ~8230 posts since then.  We have `r nrow(lf)` of those posts represented in our data set; the missing ones are posts that don't conform to the standard article/publisher/title format.  These could be [sponsor content](http://longform.org/posts/3219), [podcasts](http://longform.org/posts/3224), [author archives](http://longform.org/posts/3419), [book excerpts](http://longform.org/posts/3493), [older stories](http://longform.org/posts/3515), and [longform-guide-to-X](http://longform.org/posts/4286) collections.
+
+Excluding these seems like the right move; there are a few places where the scraper [missed out](http://longform.org/posts/3269) on a two-part article that probably should have been included in our data set, but those seemed to be the rare exception.  If you want to try to fix these edge cases, [pull requests](https://yangsu.github.io/pull-request-tutorial/) are welcome!
+
+# what's inside
+
+The top twenty publications include some familiar faces:
+
+```{r top_sources}
+
+ranked_pubs <- table(lf$publication)[order(-table(lf$publication))]
+
+ranked_pubs[1:20]
+
+```
+
+...though I was definitely suprised to see GQ in the #4 spot.
+
+
+```{r top_authors}
+
+ranked_auth <- table(lf$author)[order(-table(lf$author))]
+
+ranked_auth[1:20]
+
+```
+
+William Langewiesche, Tom Junod, Robert Draper, Skip Hollandsworth, Zadie Smith, James Verini and Mark Bowden have not appeared on the longform podcast.
+
+# on to the charts
+
+To try to get some visuals for the phenomenon that Aaron was describing, I think we want to show the each publication's percentage share of total links, for each year.  We're expecting the relative share of the Times magazine, New Yorker, etc to go down, and the web outlets to go up.
+
+```{r}
+ library(ggplot2)
+
+top_2010 <- lf_pub_disp %>%
+  dplyr::filter(
+    year_posted == 2010 & publication != 'Other'
+  ) %>%
+  mutate(
+    rank_2010 = rank(desc(n_pub), ties.method='first')
+  ) %>%
+  arrange(
+    desc(rank_pub)
+  ) %>% 
+  as.data.frame()
+
+#bring in esquire zero year
+lf_pub_disp <- rbind(
+  lf_pub_disp,
+  data.frame(
+    'year_posted'=2014,
+    'publication'='Esquire',
+    'n_pub'=0,
+    'rank_pub'=NA,
+    'yr_total'=1545,
+    'pct_year_total'=0
+  )
+)
+
+lf_pub_disp <- dplyr::left_join(
+  lf_pub_disp, top_2010[, c('publication', 'rank_2010')]  
+)
+
+lf_pub_disp <- lf_pub_disp %>%
+  arrange(
+    rank_2010, publication, year_posted  
+  )
+
+top_N <- top_2010[top_2010$rank_2010 <= 10, 'publication']
+
+ggplot(
+  data=lf_pub_disp[lf_pub_disp$publication %in% top_N &
+    lf_pub_disp$year_posted < 2015, ], 
+  aes(
+    x=year_posted, 
+    y=pct_year_total, 
+    fill=publication
+  )
+) +
+geom_area(
+  colour="black", 
+  size=.2, 
+  alpha=.4,
+) +
+theme_bw()
+  
+```
+
+
+# other directions?
+
+We have author, publication, publication date, post date, title, and a summary for each of those 7,000-odd links.  Here's what the raw data looks like:
+
+```{r raw}
+
+sample_n(lf, 5)
+
+```
+
+If you have other ideas for things to do with this data set, have at it, or shoot me a message at [@moneywithwings](http://www.twitter.com/moneywithwings).
