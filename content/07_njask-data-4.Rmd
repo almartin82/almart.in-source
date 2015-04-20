@@ -38,6 +38,18 @@ Let's tackle each of these in turn:
 
 # valid calls
 
+Before we do anything, let's source in all of the functions `fetch_hspa()`, `fetch_gepa()` created in the previous two posts.
+
+```{r source_prev}
+
+knitr::knit('05_njask-data-2.rmd', tangle=TRUE)
+source('05_njask-data-2.R')
+
+knitr::knit('06_njask-data-3.rmd', tangle=TRUE)
+source('06_njask-data-3.R')
+
+```
+
 This function will test if a year/grade call is valid.
 
 ```{r valid_call}
@@ -87,8 +99,12 @@ Here is a mapping function that calls the correct retrieval method, given grade 
 ```{r main_wrapper}
 
 fetch_nj_assess <- function(year, grade) {
-
-  is_valid <- valid_call(year, grade)
+  require(ensurer)
+  
+  #only allow valid calls
+  valid_call(year, grade) %>%
+    ensure_that(
+      all(.) ~ "invalid grade/year parameter passed")
   
   if (year >= 2008) {
     assess_data <- standard_assess(year, grade)
@@ -97,36 +113,35 @@ fetch_nj_assess <- function(year, grade) {
     if (grade %in% c(3:7)) {
       assess_data <- standard_assess(year, grade)  
     } else if (grade == 8) {
-      #not yet implemented
-      assess_data <- get_raw_gepa(year) %>%
-        process_gepa()
+      assess_data <- fetch_gepa(year)
     } else if (grade == 11) {
-      #not yet implemented
-      assess_data <- get_raw_hspa(year) %>%
-        process_hspa
+      assess_data <- fetch_hspa(year)
     }
   #2004 and 2005:  NJASK 3rd & 4th, GEPA 8th, HSPA 11th
   } else if (year %in% c(2004, 2005)) {
     if (grade %in% c(3:4)) {
       assess_data <- standard_assess(year, grade)  
     } else if (grade == 8) {
-      #not yet implemented
-      assess_data <- get_raw_gepa(year) %>%
-        process_gepa()
+      assess_data <- fetch_gepa(year)
     } else if (grade == 11) {
-      #not yet implemented
-      assess_data <- get_raw_hspa(year) %>%
-        process_hspa 
+      assess_data <- fetch_hspa(year)
     }
-  # if we ever reached this block, there's a problem with our `valid_call()` function
+  
   } else {
-    #raise an error
+    #if we ever reached this block, there's a problem with our `valid_call()` function
+    stop("unable to match your grade/year parameters to the appropriate function.")
   }
  
   return(assess_data)
 }
 
-fetch_nj_assess(2014, 6) %>% head()
+```
+
+try it out:
+
+```{r try_wrapper}
+
+fetch_nj_assess(2014, 6) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
 ```
 
@@ -136,7 +151,70 @@ Finally, as a convenience, let's write a function that brings down all of the NJ
 
 ```{r all_njask}
 
+fetch_all_nj <- function() {
+  
+  #make the df of years and grades to iterate over  
+  post2006_years <- c(2006:2013)
+  post2006_years <- c(2013)
+  post2006_grades <- c(8, 11)
+  
+  pre2006_years <- c(2004, 2005)
+  pre2006_grades <- c(3, 4, 8, 11)
+  pre2006_grades <- c(4)
+  
+  df <- data.frame(
+    year = vector(mode="numeric", length=0),
+    grade = vector(mode="numeric", length=0)
+  )
+  
+  for (i in post2006_years) {
+    #use R recycling to make df
+    int_df <- data.frame(
+      year = i,
+      grade = post2006_grades
+    )
+    
+    df <- rbind(df, int_df)
+  }
+  
+  for (j in pre2006_years) {
+    #use R recycling to make df
+    int_df <- data.frame(
+      year = j,
+      grade = pre2006_grades
+    )
+    
+    df <- rbind(df, int_df)
+  }
 
+  #sort the df
+  df <- df %>% dplyr::arrange(
+    desc(year), grade
+  )
+  
+  #to hold the results
+  results <- list()
+  
+  #iterate over the df and get the data
+  for (i in 1:nrow(df)) {
+    this_row <- df[i, ]
+    #be verbose
+    row_key <- paste0('nj', this_row$year, 'gr', this_row$grade)
+    print(row_key)
+    
+    #call this grade/year and attach to results list
+    results[row_key] <-  fetch_nj_assess(this_row$year, this_row$grade)
+  }
+
+  return(results)  
+}
 
 ```
 
+test it:
+
+```{r test_all_data}
+
+all_nj <- fetch_all_nj()
+
+```

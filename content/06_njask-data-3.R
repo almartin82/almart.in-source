@@ -1,11 +1,5 @@
-Title: Getting NJ assessment data into R: part 3 in a series.
-Date: 2015-04-16
-Category: education
-Tags: NJ, assessment, NJASK, HSPA, data_management, tutorial
-Slug: reading-nj-assess-data-3
-Author: Andrew Martin
 
-```{r pelican_conf, echo=FALSE}
+## ----pelican_conf, echo=FALSE--------------------------------------------
 #SET THIS TO TRUE WHEN READY TO PUBLISH
 ready_to_ship = TRUE
 
@@ -21,34 +15,23 @@ knit_hooks$set(plot=function(x, options) {
 opts_chunk$set(dev='Cairo_svg')
 opts_chunk$set(pelican.publish=ready_to_ship)
 
-```
-
-In my [last post]({filename}/06_njask-data-3.Rmd), I talked about how to programmatically process and cleanup NJASK data.  In this post, we'll extend the NJASK functions to the High School Proficiency Assessment (HSPA), and to the old Grade Eight Proficiency Assessment (GEPA).  With functions that can access each of those data sources, we'll be ready to write a general wrapper that simplifies access to relevant state assessment data.<!-- PELICAN_END_SUMMARY -->
-
-# HSPA
-
-Much like the NJASK data in posts [1]({filename}/04_njask-data-1.Rmd) and [2]({filename}/05_njask-data-2.Rmd), we're going to read from a fixed width file on the state website, use a layout file to name the variables, and do some post-processing.  I also [wrote up]({filename}pages/06a_hspa-layout.Rmd) how to process the HSPA metadata, if data processing is your thing.
-
-Load in those processed files:
 
 
-```{r libraries, message=FALSE, warning=FALSE}
+## ----libraries, message=FALSE, warning=FALSE-----------------------------
 library(readr)
 library(dplyr)
 library(magrittr)
-```
 
-```{r hspa1}
+
+## ----hspa1---------------------------------------------------------------
 
 load(file = 'datasets/hspa_layout.rda')
 load(file = 'datasets/hspa2010_layout.rda')
 head(layout_hspa)
 
-```
 
-Use the layout file to process an example HSPA data file:
 
-```{r hspa2}
+## ----hspa2---------------------------------------------------------------
 
 hspa_url <- 'http://www.state.nj.us/education/schools/achievement/14/hspa/state_summary.txt'
 
@@ -64,13 +47,9 @@ hspa_ex <- readr::read_fwf(
 
 hspa_ex %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-That gets us to a similar state as we were in for the NJASK data - we have all the columns identified, but there's a need for post-processing, especially for the percentage columns, which have 'One implied decimal.'
 
-We can take the formula we wrote to process NJASK data frames and generalize it, so that it can handle both NJASK and HSPA data.
-
-```{r generalize_processing}
+## ----generalize_processing-----------------------------------------------
 
 process_nj_assess <- function(df, layout) {
   #build a mask
@@ -120,11 +99,9 @@ process_nj_assess <- function(df, layout) {
 
 process_nj_assess(hspa_ex, layout_hspa) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-Yep, that totally works.  Following from the NJASK example, we'll write a function to simplify fetching the HSPA data, and a final wrapper around the fetch/process steps.
 
-```{r fetch_hspa}
+## ----fetch_hspa----------------------------------------------------------
 
 get_raw_hspa <- function(year, layout=layout_hspa) {
   require(readr)
@@ -171,25 +148,17 @@ fetch_hspa <- function(year) {
 
 fetch_hspa(2010) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-Nice!  NJASK and HSPA down, GEPA data to go.
 
-# GEPA
-
-Load in the processed GEPA layout file:
-```{r gepa1}
+## ----gepa1---------------------------------------------------------------
 
 load(file = 'datasets/gepa_layout.rda')
 
 head(layout_gepa)
 
-```
 
 
-A function to get GEPA data:
-
-```{r gepa2}
+## ----gepa2---------------------------------------------------------------
 
 get_raw_gepa <- function(year, layout=layout_gepa) {
   require(readr)
@@ -227,20 +196,15 @@ gepa_ex <- get_raw_gepa(2007)
 
 gepa_ex %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-Can we process the GEPA df using our existing function?
 
-```{r gepa3}
+## ----gepa3---------------------------------------------------------------
 
 process_nj_assess(gepa_ex, layout_gepa) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-Yes, totally.  
-Final step: write all of that into a final wrapper function:
 
-```{r gepa_wrapper}
+## ----gepa_wrapper--------------------------------------------------------
 
 #final wrapper
 fetch_gepa <- function(year) {
@@ -250,6 +214,5 @@ fetch_gepa <- function(year) {
 
 fetch_gepa(2007) %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
-```
 
-In the [next post]({filename}/07_njask-data-4.Rmd) in this series, we'll take these individual NJASK, HSPA, and GEPA functions and write one wrapper to rule them all, allowing data to be easily fetched for any year/grade.
+

@@ -1,11 +1,5 @@
-Title: Getting NJ assessment data into R: part 2 in a series
-Date: 2015-04-15
-Category: education
-Tags: NJ, assessment, NJASK, HSPA, data_management, tutorial
-Slug: reading-nj-assess-data-2
-Author: Andrew Martin
 
-```{r, echo=FALSE}
+## ----, echo=FALSE--------------------------------------------------------
 #SET THIS TO TRUE WHEN READY TO PUBLISH
 ready_to_ship = TRUE
 
@@ -21,23 +15,17 @@ knit_hooks$set(plot=function(x, options) {
 opts_chunk$set(dev='Cairo_svg')
 opts_chunk$set(pelican.publish=ready_to_ship)
 
-```
 
-In my [last post]({filename}/04_njask-data-1.Rmd), I showed how to read a fixed width file into R.  In this post, I'll refactor that code into a function that takes year/grade as a parameter.
 
-First, read in the layout data frame.  This contains the column headers for NJASK fixed with files.<!-- PELICAN_END_SUMMARY -->
-
-```{r load_layout}
+## ----load_layout---------------------------------------------------------
 
 load(file = 'datasets/njask_layout.rda')
 
 head(layout_njask)
 
-```
 
-Our final call to `read_fwf` in the last post looked like this:
-  
-```{r final_fwf}
+
+## ----final_fwf-----------------------------------------------------------
 
 sample_file = "http://www.state.nj.us/education/schools/achievement/14/njask8/state_summary.txt"
 
@@ -51,15 +39,9 @@ njask14_gr8 <- readr::read_fwf(
   na = "*"
 )
 
-```
 
-A script that has a bunch of copy/paste versions of that call would probably get the job done, but we're writing for our [future selves](https://xkcd.com/1421/) here, and those url paths are easy to build.  The function should:
 
-1) build the target url
-
-2) use hadley's `readr` to fetch the fixed with file, using the provided field definitions.
-
-```{r as_function}
+## ----as_function---------------------------------------------------------
 
 get_raw_njask <- function(year, grade, layout=layout_njask) {
   require(readr)
@@ -93,26 +75,18 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
   
 }
 
-```
 
-Let's give it a try!
 
-```{r test_get_raw_njask} 
+## ----test_get_raw_njask--------------------------------------------------
 library(magrittr)
 
 ex <- get_raw_njask(2014, 6)
 
 dplyr::sample_n(ex[, sample(c(1:551), 10)], 10) %>% as.data.frame()
 
-```
 
-Great - we can definitely pull down all the data files we need.  Now let's make sure that we are doing the necessary cleanup.  In particular, there are 228 columns in our layout file that have the comment 'One implied decimal.'  That really matters - it means that `255` _actually_ means 25.5.  
 
-For each of those columns, we want to apply a function to each column.  Hadley's `dplyr` has a nice utility for doing this - `mutate_each`.
-
-We'll also need to make sure that we only mutate the columns that are tagged with 'One implied decimal.'
-
-```{r limit_df}
+## ----limit_df------------------------------------------------------------
 library(dplyr)
 
 process_njask <- function(df, mask=layout_njask$comments == 'One implied decimal') {
@@ -145,11 +119,9 @@ ex_process <- process_njask(ex)
 
 head(ex_process[, 1:15])
 
-```
 
-Now we put it all together, with a little wrapper function around the `get_raw_njask` and `process_njask` functions:
 
-```{r wrapper}
+## ----wrapper-------------------------------------------------------------
 
 fetch_njask <- function(year, grade) {
   get_raw_njask(year, grade) %>% process_njask()
@@ -157,6 +129,5 @@ fetch_njask <- function(year, grade) {
 
 fetch_njask(2014, 6) %>% head() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean)
 
-```
 
-There's a more data out there than just the grade 3 NJASK, though.  In my[next post]({filename}/06_njask-data-3.Rmd), we'll tackle the HSPA, and dive into some older data - the 'Grade Eight Proficiency Assessment' (GEPA) that used to be offered to students at the end of middle school, with the ultimate goal of stitching everything together into a simplified R interface for NJ assessment data.
+
