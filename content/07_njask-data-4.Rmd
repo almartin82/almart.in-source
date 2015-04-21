@@ -1,6 +1,5 @@
 Title: Getting NJ assessment data into R: part 4 in a series.
-Date: 2015-04-16
-Status: draft
+Date: 2015-04-21
 Category: education
 Tags: NJ, assessment, NJASK, HSPA, data_management, tutorial
 Slug: reading-nj-assess-data-4
@@ -34,7 +33,7 @@ Roughly speaking, we're tying to write a function that will return data given a 
 
 3. Fetch, clean, and return the data frame.
 
-Let's tackle each of these in turn:
+Let's tackle each of these in turn:.<!-- PELICAN_END_SUMMARY -->
 
 # valid calls
 
@@ -58,6 +57,7 @@ valid_call <- function(year, grade) {
   #common core transition started in 2015
   if(year > 2014) {
     valid_call <- FALSE
+  #assessment coverage 3:8 from 2006 on.
   #NJASK fully implemented in 2008
   } else if(year >= 2006) {
     valid_call <- grade %in% c(3:8, 11)
@@ -68,7 +68,6 @@ valid_call <- function(year, grade) {
   }
   
   return(valid_call)
-
 }
 
 ```
@@ -81,12 +80,9 @@ This function does normal retrieval (NJASK for 3-8; HSPA for 11).
 
 standard_assess <- function(year, grade) {
   if(grade %in% c(3:8)) {
-    assess_data <- get_raw_njask(year, grade) %>%
-      process_njask()
+    assess_data <- fetch_njask(year, grade)
   } else if (grade == 11) {
-    #not yet implemented
-    assess_data <- get_raw_hspa(year) %>%
-      process_hspa
+    assess_data <- fetch_hspa(year) 
   }
   
   return(assess_data)
@@ -155,12 +151,15 @@ fetch_all_nj <- function() {
   
   #make the df of years and grades to iterate over  
   post2006_years <- c(2006:2013)
-  post2006_years <- c(2013)
-  post2006_grades <- c(8, 11)
+  post2006_grades <- c(3:8, 11)
   
   pre2006_years <- c(2004, 2005)
   pre2006_grades <- c(3, 4, 8, 11)
-  pre2006_grades <- c(4)
+
+  #subset just for testing
+  #post2006_years <- c(2006)
+  #post2006_grades <- c(8, 11)
+  #pre2006_grades <- c(4)
   
   df <- data.frame(
     year = vector(mode="numeric", length=0),
@@ -203,7 +202,7 @@ fetch_all_nj <- function() {
     print(row_key)
     
     #call this grade/year and attach to results list
-    results[row_key] <-  fetch_nj_assess(this_row$year, this_row$grade)
+    results[[row_key]] <-  fetch_nj_assess(this_row$year, this_row$grade)
   }
 
   return(results)  
@@ -216,5 +215,7 @@ test it:
 ```{r test_all_data}
 
 all_nj <- fetch_all_nj()
+
+length(all_nj)
 
 ```

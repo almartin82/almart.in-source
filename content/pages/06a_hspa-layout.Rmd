@@ -1,4 +1,4 @@
-Title: Errata: prepping the HSPA and GEPA layout files
+Title: Errata: prepping the HSPA, GEPA, and old NJASK layout files
 Date: 2015-04-16
 Category: education
 Tags: boring, errata
@@ -8,7 +8,7 @@ Author: Andrew Martin
 
 ```{r, echo=FALSE}
 #SET THIS TO TRUE WHEN READY TO PUBLISH
-ready_to_ship = TRUE
+ready_to_ship = FALSE
 
 library(knitr)
 hook_plot <- knit_hooks$get('plot')
@@ -194,6 +194,7 @@ save(layout_hspa2010, file = paste0(final_path, 'datasets/hspa2010_layout.rda'))
 
 ```
 
+# GEPA
 
 Now do the same for the GEPA layout, using the functions developed above:
 
@@ -220,5 +221,164 @@ Save:
 ```{r gepa3}
 
 save(layout_gepa, file = paste0(final_path, 'datasets/gepa_layout.rda'))
+
+```
+
+# old NJASK
+
+repeat for old NJASK
+
+Read:
+```{r oldnjask1}
+
+njask05 <- readr::read_csv(paste0(final_path, 'datasets/njask2005_layout.csv'))
+names(njask05) <- tolower(gsub(' ', '_', names(njask05)))
+
+head(njask05)
+
+```
+
+Process:
+```{r oldnjask2}
+
+layout_njask05 <- process_layout(njask05)
+
+layout_njask05 %>% head()
+layout_njask05 %>% tail()
+
+```
+
+Save:
+```{r oldnjask3}
+
+save(layout_njask05, file = paste0(final_path, 'datasets/njask05_layout.rda'))
+
+```
+
+# (2004) old NJASK
+
+once more for 2004 NJASK
+
+Read:
+```{r njask041}
+
+njask04 <- readr::read_csv(paste0(final_path, 'datasets/njask2004_layout.csv'))
+names(njask04) <- tolower(gsub(' ', '_', names(njask04)))
+
+head(njask04)
+
+```
+
+Process:
+```{r njask042}
+
+layout_njask04 <- process_layout(njask04)
+
+layout_njask04 %>% head()
+layout_njask04 %>% tail()
+
+```
+
+Save:
+```{r njask043}
+
+save(layout_njask04, file = paste0(final_path, 'datasets/njask04_layout.rda'))
+
+```
+
+
+# 2007 gr 3 NJASK
+
+this one used a slightly different layout.
+
+Read:
+```{r njask07_1}
+
+njask07gr3 <- readr::read_csv(paste0(final_path, 'datasets/njask2007gr3_layout.csv'))
+names(njask07gr3) <- tolower(gsub(' ', '_', names(njask07gr3)))
+
+head(njask07gr3)
+
+```
+
+Process:
+```{r njask07_2}
+
+layout_njask07gr3 <- process_layout(njask07gr3)
+
+layout_njask07gr3 %>% head()
+layout_njask07gr3 %>% tail()
+
+```
+
+Save:
+```{r njask07_3}
+
+save(layout_njask07gr3, file = paste0(final_path, 'datasets/njask07gr3_layout.rda'))
+
+```
+
+
+
+# 2006 gr 3 NJASK
+
+sooooo many little changes to these layouts.
+
+Read:
+```{r njask06_1}
+
+njask06gr3 <- readr::read_csv(paste0(final_path, 'datasets/njask2006gr3_layout.csv'))
+names(njask06gr3) <- tolower(gsub(' ', '_', names(njask06gr3)))
+
+head(njask06gr3)
+
+```
+
+Process:
+```{r njask06_2}
+
+layout_njask06gr3 <- process_layout(njask06gr3)
+
+layout_njask06gr3 %>% head()
+layout_njask06gr3 %>% tail()
+
+```
+
+Save:
+```{r njask06_3}
+
+save(layout_njask06gr3, file = paste0(final_path, 'datasets/njask06gr3_layout.rda'))
+
+```
+
+
+# 2006 gr 5 NJASK
+
+sigh.
+
+Read:
+```{r njask06gr5_1}
+
+njask06gr5 <- readr::read_csv(paste0(final_path, 'datasets/njask2006gr5_layout.csv'))
+names(njask06gr5) <- tolower(gsub(' ', '_', names(njask06gr5)))
+
+head(njask06gr5)
+
+```
+
+Process:
+```{r njask06gr5_2}
+
+layout_njask06gr5 <- process_layout(njask06gr5)
+
+layout_njask06gr5 %>% head()
+layout_njask06gr5 %>% tail()
+
+```
+
+Save:
+```{r njask06gr5_3}
+
+save(layout_njask06gr5, file = paste0(final_path, 'datasets/njask06gr5_layout.rda'))
 
 ```
