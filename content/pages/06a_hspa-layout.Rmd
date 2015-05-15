@@ -382,3 +382,34 @@ Save:
 save(layout_njask06gr5, file = paste0(final_path, 'datasets/njask06gr5_layout.rda'))
 
 ```
+
+# 2009 NJASK
+
+Read:
+```{r njask09_1}
+
+njask09 <- readr::read_csv(paste0(final_path, 'datasets/njask2009_layout.csv'))
+names(njask09) <- tolower(gsub(' ', '_', names(njask09)))
+
+head(njask09)
+
+```
+
+Process:
+```{r njask09_2}
+
+layout_njask09 <- process_layout(njask09)
+
+layout_njask09 %>% head()
+layout_njask09 %>% tail()
+
+```
+
+
+Save:
+```{r njask09_3}
+
+save(layout_njask09, file = paste0(final_path, 'datasets/njask09_layout.rda'))
+
+```
+
