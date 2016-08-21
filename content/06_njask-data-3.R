@@ -1,4 +1,3 @@
-
 ## ----pelican_conf, echo=FALSE--------------------------------------------
 #SET THIS TO TRUE WHEN READY TO PUBLISH
 ready_to_ship = TRUE
@@ -16,19 +15,16 @@ opts_chunk$set(dev='Cairo_svg')
 opts_chunk$set(pelican.publish=ready_to_ship)
 
 
-
 ## ----libraries, message=FALSE, warning=FALSE-----------------------------
 library(readr)
 library(dplyr)
 library(magrittr)
-
 
 ## ----hspa1---------------------------------------------------------------
 
 load(file = 'datasets/hspa_layout.rda')
 load(file = 'datasets/hspa2010_layout.rda')
 head(layout_hspa)
-
 
 
 ## ----hspa2---------------------------------------------------------------
@@ -46,7 +42,6 @@ hspa_ex <- readr::read_fwf(
 )
 
 hspa_ex %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
-
 
 
 ## ----generalize_processing-----------------------------------------------
@@ -91,7 +86,6 @@ process_nj_assess <- function(df, layout) {
 }
 
 process_nj_assess(hspa_ex, layout_hspa) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
-
 
 
 ## ----fetch_hspa----------------------------------------------------------
@@ -151,14 +145,12 @@ fetch_hspa <- function(year) {
 fetch_hspa(2010) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
 
-
 ## ----gepa1---------------------------------------------------------------
 
 load(file = 'datasets/gepa_layout.rda')
 load(file = 'datasets/njask05_layout.rda')
 
 head(layout_gepa)
-
 
 
 ## ----gepa2---------------------------------------------------------------
@@ -205,11 +197,9 @@ gepa_ex <- get_raw_gepa(2007)
 gepa_ex %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
 
 
-
 ## ----gepa3---------------------------------------------------------------
 
 process_nj_assess(gepa_ex, layout_gepa) %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
-
 
 
 ## ----gepa_wrapper--------------------------------------------------------
@@ -221,6 +211,5 @@ fetch_gepa <- function(year) {
 }
 
 fetch_gepa(2007) %>% as.data.frame() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean) %>% head()
-
 
 

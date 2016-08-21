@@ -74,3 +74,6 @@ almart.in/
 content/*.Rproj
 .Rhistory
 content/*.Rhistory
+
+#os X
+.DS_Store

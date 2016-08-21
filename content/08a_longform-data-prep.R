@@ -1,4 +1,3 @@
-
 ## ----raw_data------------------------------------------------------------
 
 lf <- read.csv('datasets/longform_sources.csv', stringsAsFactors=FALSE)
@@ -7,7 +6,6 @@ lf <- read.csv('datasets/longform_sources.csv', stringsAsFactors=FALSE)
 lf$publication <- gsub('&#x27;', "'", lf$publication)
 
 head(lf)
-
 
 
 ## ----the_x---------------------------------------------------------------
@@ -24,13 +22,11 @@ for (i in pubs) {
 
 #print(dupes)
 
-
 ## ----fix_dupes-----------------------------------------------------------
 
 for (j in dupes) {
   lf$publication <- gsub(paste('The', j), j, lf$publication)
 }
-
 
 
 ## ----fix_date------------------------------------------------------------
@@ -42,14 +38,12 @@ lf$posted_at <- lubridate::parse_date_time(
 )
 
 
-
 ## ------------------------------------------------------------------------
 
 lf <- lf %>%
   dplyr::filter(
     lubridate::year(lf$posted_at) >= 2010  
   )
-
 
 
 ## ----by_year-------------------------------------------------------------
@@ -87,7 +81,6 @@ lf_pub_disp <- lf_pub_disp %>%
 
 
 
-
 ## ----join_back-----------------------------------------------------------
 
 #all
@@ -106,6 +99,5 @@ lf_pub_disp$pct_year_total <- (lf_pub_disp$n_pub / lf_pub_disp$yr_total) * 100
 
 head(lf_pub_yr)
 head(lf_pub_disp)
-
 
 

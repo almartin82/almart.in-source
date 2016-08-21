@@ -6,16 +6,16 @@ from __future__ import unicode_literals
 AUTHOR = u'Andrew Martin'
 SITENAME = u'almart.in'
 SITEURL = u'http://almart.in'
-DESCRIPTION = u'r, #rstats, ggplot2, python, pandas, education, data science, maps, baseball, brooklyn'
+DESCRIPTION = u'r, #rstats, ggplot2, python, pandas, education, data science, statistical programming, maps, baseball, brooklyn'
 
 #pelican parameters
-OUTPUT_PATH = 'almart.in/'
+OUTPUT_PATH = '../almart.in/'
 PATH = 'content'
 TIMEZONE = 'America/New_York'
 DEFAULT_DATE_FORMAT = '%B %d %Y'
 DEFAULT_LANG = u'en'
 DEFAULT_PAGINATION = False
-THEME = "more_wilson/"
+THEME = '../more_wilson/'
 GOOGLE_ANALYTICS = True
 GOOGLE_ANALYTICS_ID = 'UA-61809650-1'
 OUTPUT_SOURCES = 'True'
@@ -23,8 +23,8 @@ OUTPUT_SOURCES_EXTENSION = '.txt'
 SUMMARY_MAX_LENGTH = 250
 
 # feed generation
-FEED_ALL_ATOM = '/feeds/all_atom.xml'
-CATEGORY_FEED_ATOM = 'feeds/%s.atom.xml'
+# FEED_ALL_ATOM = '/feeds/all_atom.xml'
+# CATEGORY_FEED_ATOM = 'feeds/%s.atom.xml'
 
 #more_wilson settings
 USE_COMMENTS = False
@@ -44,7 +44,7 @@ MEDIAITEMS = [
 ]
 
 #plugins etc
-PLUGIN_PATHS = ['pelican-plugins/']
+PLUGIN_PATHS = ['../pelican-plugins/']
 PLUGINS = ['post_stats', 'summary', 'rmd_reader']
 
 #knitr/rmd integration

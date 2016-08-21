@@ -1,5 +1,4 @@
-
-## ----, echo=FALSE--------------------------------------------------------
+## ---- echo=FALSE---------------------------------------------------------
 #SET THIS TO TRUE WHEN READY TO PUBLISH
 ready_to_ship = TRUE
 
@@ -16,7 +15,6 @@ opts_chunk$set(dev='Cairo_svg')
 opts_chunk$set(pelican.publish=ready_to_ship)
 
 
-
 ## ----load_layout---------------------------------------------------------
 
 load(file = 'datasets/njask_layout.rda')
@@ -28,7 +26,6 @@ load(file = 'datasets/njask06gr3_layout.rda')
 load(file = 'datasets/njask06gr5_layout.rda')
 
 head(layout_njask)
-
 
 
 ## ----final_fwf-----------------------------------------------------------
@@ -44,7 +41,6 @@ njask14_gr8 <- readr::read_fwf(
   ),
   na = "*"
 )
-
 
 
 ## ----as_function---------------------------------------------------------
@@ -114,14 +110,12 @@ get_raw_njask <- function(year, grade, layout=layout_njask) {
 }
 
 
-
 ## ----test_get_raw_njask--------------------------------------------------
 library(magrittr)
 
 ex <- get_raw_njask(2014, 6)
 
 dplyr::sample_n(ex[, sample(c(1:551), 10)], 10) %>% as.data.frame()
-
 
 
 ## ----limit_df------------------------------------------------------------
@@ -159,7 +153,6 @@ ex_process <- process_njask(ex)
 head(ex_process[, 1:15])
 
 
-
 ## ----wrapper-------------------------------------------------------------
 
 fetch_njask <- function(year, grade) {
@@ -192,6 +185,5 @@ fetch_njask <- function(year, grade) {
 }
 
 fetch_njask(2014, 6) %>% head() %>% select(CDS_Code:TOTAL_POPULATION_LANGUAGE_ARTS_Scale_Score_Mean)
-
 
 
